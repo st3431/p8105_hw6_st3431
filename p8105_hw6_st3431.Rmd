@@ -1,0 +1,96 @@
+---
+title: "p8105_hw6_st3431"
+output: github_document
+date: "2022-11-28"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+```{r}
+library(tidyverse)
+```
+
+**Problem 2** 
+
+```{r}
+crimes_df= 
+  read_csv("hw6_data/homicide-data.csv", na= c("", "Unknown")) %>% 
+  mutate(
+    city_state= str_c(city, state), 
+    resolution = case_when(
+      disposition == "Closed without arrest" ~ "unsolved",
+      disposition == "Open/No arrest" ~ "unsolved",
+      disposition == "Closed by arrest" ~ "solved")) %>% 
+filter(!city_state %in% c("Dallas, TX", "Phoenix, AZ", "Kansas City, MO", "Tuls, AL" )) %>% 
+filter(victim_race == "White"  | victim_race == "Black") %>%
+  mutate(victim_age= as.numeric(victim_age)) 
+```
+
+Logistic regression with Baltimore 
+
+```{r}
+## baltimore_regression= 
+  # crimes_df %>%  
+ # filter(city_state == "Baltimore, MD") %>% 
+#  glm(resolution ~ victim_age + victim_race + victim_sex, data = ., family = binomial)
+```
+
+**Problem 3** 
+
+```{r}
+birthweight_df = 
+  read_csv("hw6_data/birthweight.csv") %>% 
+  janitor::clean_names() 
+
+skimr::skim(birthweight_df)$n_missing
+
+birthweight_cleaned=
+  birthweight_df %>%
+  mutate(sex = recode(babysex,
+                          '1' = 'male',
+                          '2' = 'female'),
+         sex = factor(babysex, levels = c('male', 'female')),
+         frace = recode(frace,
+                        '1' = 'White',
+                        '2' = 'Black',
+                        '3' = 'Asian',
+                        '4' = 'Puerto Rican',
+                        '8' = 'Other',
+                        '9' = 'Unknown'), 
+         frace = factor(frace, levels = c('White', 'Black', 'Asian', 'Puerto Rican', 'Other')),
+         malform = recode(malform,
+                          '0' = 'absent',
+                          '1' = 'present'),
+         malform = factor(malform, levels = c('absent', 'present')), 
+         mrace = recode(mrace,
+                        '1' = 'White',
+                        '2' = 'Black',
+                        '3' = 'Asian',
+                        '4' = 'Puerto Rican',
+                        '8' = 'Other'), 
+         mrace = factor(mrace, levels = c('White', 'Black', 'Asian', 'Puerto Rican', 'Other')))
+  
+```
+
+Proposing a regression model 
+
+As per Liu et al. (2022) the 
+```{r}
+bwt_model= 
+  lm(bwt ~ bhead + blength  + mrace + mheight + wtgain + smoken + gaweeks, 
+     data= birthweight_cleaned)
+
+bwt_model
+
+bw_model= modelr::add_residuals(birthweight_cleaned, bwt_model)
+bw_model= modelr::add_predictions(bw_model, bwt_model)
+```
+
+
+
+
