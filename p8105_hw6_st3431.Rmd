@@ -49,6 +49,8 @@ broom::tidy(balt_regression) %>%
 
 ```
 
+The estimated odds of a crime being solved for a male victim is 0.412 times the estimated odds of a crime being solved for a female victim. We are 95% confident that the true odds ratio lies between the 0.315 and 0.537.  
+
 ```{r}
 all_cities= 
   crimes_df %>% 
@@ -75,6 +77,8 @@ all_cities=
        y = "Odds ratio", 
        x = "City")
 ```
+
+The plot demonstrates that most cities have a point estimate below 1, with only Albuquerque, NM, New Orleans, L, and Stockton, CA having an odds ratio greater than 1, indicating that in these cities the odds of a male victim crime being solved is higher than a female victim crime. 
 
 **Problem 3** 
 
